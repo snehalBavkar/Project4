@@ -1,0 +1,63 @@
+#importing Packages
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.preprocessing import LabelEncoder
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error
+import pandas as pd
+import numpy as np
+#from sklearn.datasets import load_iris
+
+#load dataset
+df =pd.read_csv("C:/Users/Home/Documents/Snehal/WineQT.csv")
+print(df)
+
+#Creating Instance
+rf=RandomForestClassifier()
+
+#x and y values
+x=df.drop('quality',axis=1)
+x= pd.DataFrame(np.c_[df['fixed acidity'],df['pH'],df['chlorides'],df['residual sugar'],df['free sulfur dioxide']],columns=['fixed acidity','pH','chlorides','residual sugar','free sulfur dioxide'])
+y=df['quality']
+
+#Traning and Testing
+x_train,x_test,y_train,y_test=train_test_split(x,y,random_state=0,test_size=0.3)
+rf.fit(x_train,y_train)
+
+# Predection and Error
+y_pred=rf.predict(x_test)
+print("Mean Squared Error : ",np.sqrt(mean_squared_error(y_test,y_pred)))
+
+#feature selection
+from sklearn.ensemble import ExtraTreesClassifier
+import matplotlib.pyplot as plt
+
+model = ExtraTreesClassifier()
+model.fit(x,y)
+
+print(model.feature_importances_)
+
+feat_imp = pd.Series(model.feature_importances_,index=x.columns)
+feat_imp.nlargest(13).plot(kind='barh')
+plt.show()
+
+
+#OUTPUT
+'''
+C:\Users\Home\PycharmProjects\DataScience\venv\Scripts\python.exe C:/Users/Home/PycharmProjects/DataScience/Wine_quality_Dataset.py
+      fixed acidity  volatile acidity  citric acid  ...  alcohol  quality    Id
+0               7.4             0.700         0.00  ...      9.4        5     0
+1               7.8             0.880         0.00  ...      9.8        5     1
+2               7.8             0.760         0.04  ...      9.8        5     2
+3              11.2             0.280         0.56  ...      9.8        6     3
+4               7.4             0.700         0.00  ...      9.4        5     4
+...             ...               ...          ...  ...      ...      ...   ...
+1138            6.3             0.510         0.13  ...     11.0        6  1592
+1139            6.8             0.620         0.08  ...      9.5        6  1593
+1140            6.2             0.600         0.08  ...     10.5        5  1594
+1141            5.9             0.550         0.10  ...     11.2        6  1595
+1142            5.9             0.645         0.12  ...     10.2        5  1597
+
+[1143 rows x 13 columns]
+Mean Squared Error :  0.8153054838954359
+[0.20392246 0.2036837  0.21366665 0.19104741 0.18767978]
+'''
